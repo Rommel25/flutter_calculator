@@ -75,6 +75,7 @@ class _CalculatriceState extends State<Calculatrice> {
       }
     }
 
+
     // Mise à jour de l'affichage
     setState(() {
       output = _output;
