@@ -26,6 +26,7 @@ class _CalculatriceState extends State<Calculatrice> {
   double num1 = 0.0;
   double num2 = 0.0;
   String operand = "";
+  bool operatorPressed = false;
 
   void boutonAppuye(String bouton) {
     // Si C est appuyé, réinitialiser tout
@@ -34,6 +35,7 @@ class _CalculatriceState extends State<Calculatrice> {
       num1 = 0.0;
       num2 = 0.0;
       operand = "";
+      operatorPressed = false;
     }
     // Si = est appuyé, calculer le résultat
     else if (bouton == "=") {
@@ -41,8 +43,15 @@ class _CalculatriceState extends State<Calculatrice> {
         return; // Pas d'opération à effectuer
       }
 
-      num2 = double.parse(_output);
+      // Extraire le deuxième nombre (après l'opérateur)
+      String secondNumberStr = _output.substring(_output.indexOf(operand) + 1);
+      if (secondNumberStr.isEmpty) {
+        return; // Pas de deuxième nombre
+      }
 
+      num2 = double.parse(secondNumberStr);
+
+      //Cas de calcul pour chaque opérator
       if (operand == "+") {
         _output = (num1 + num2).toString();
       }
@@ -53,18 +62,26 @@ class _CalculatriceState extends State<Calculatrice> {
         _output = (num1 * num2).toString();
       }
       if (operand == "/") {
-        _output = (num1 / num2).toString();
+        if (num2 == 0) {
+          _output = "Error";  // Faire attention à la division par 0
+        } else {
+          _output = (num1 / num2).toString();
+        }
       }
 
       num1 = 0.0;
       num2 = 0.0;
       operand = "";
+      operatorPressed = false;
     }
     // Si un opérateur est appuyé
     else if (bouton == "+" || bouton == "-" || bouton == "*" || bouton == "/") {
-      num1 = double.parse(_output);
-      operand = bouton;
-      _output = "0";
+      if (!operatorPressed) {
+        num1 = double.parse(_output);
+        operand = bouton;
+        _output = _output + bouton; // Ajouter l'opérateur à l'affichage pour voir le calcul
+        operatorPressed = true;
+      }
     }
     // Si un nombre est appuyé
     else {
@@ -74,7 +91,6 @@ class _CalculatriceState extends State<Calculatrice> {
         _output = _output + bouton;
       }
     }
-
 
     // Mise à jour de l'affichage
     setState(() {
